@@ -1,0 +1,18 @@
+name: Jira Search
+description: Find a specific Jira issue
+inputs:
+  jql:
+    description: JQL query to select exactly 1 issue
+    required: true
+outputs:
+  issue:
+    description: Key of the issue found
+    value: ${{ steps.search.outputs.key }}
+runs:
+  using: 'composite'
+  steps:
+    - run: cd ${GITHUB_ACTION_PATH} && echo "::set-output name=key::$(go run main.go)"
+      id: search
+      shell: bash
+      env:
+        INPUT_JQL: ${{ inputs.jql }}
