@@ -2,7 +2,7 @@ name: Jira Search
 description: Find a specific Jira issue
 inputs:
   jql:
-    description: JQL query to select exactly 1 issue
+    description: JQL query to select at most 1 issue
     required: true
 outputs:
   issue:
@@ -11,14 +11,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - run: |
-        cd ${GITHUB_ACTION_PATH}
-        KEY="$(go run main.go)"
-        if [[ $? -ne 0 ]]; then
-          exit $?
-        fi
-        echo "Found issue ${KEY}"
-        echo "::set-output name=key::${KEY}"
+    - run: cd ${GITHUB_ACTION_PATH} && go run main.go
       id: search
       shell: bash
       env:

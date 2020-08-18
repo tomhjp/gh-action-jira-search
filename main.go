@@ -32,12 +32,18 @@ func search() error {
 		return err
 	}
 	if len(issueKeys) == 0 {
-		return errors.New("no issues found for jql query")
+		fmt.Println("Successfully queried API but did not find any issues")
+		return nil
 	} else if len(issueKeys) > 1 {
 		return errors.New("jql does not uniquely identify an issue")
 	}
 
-	fmt.Printf(issueKeys[0])
+	key := issueKeys[0]
+	fmt.Printf("Found issue %s\n", key)
+
+	// Special format log line to set output for the action.
+	// See https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#outputs-for-composite-run-steps-actions.
+	fmt.Printf("::set-output name=key::%s\n", key)
 
 	return nil
 }

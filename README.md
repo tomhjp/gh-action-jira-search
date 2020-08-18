@@ -5,19 +5,21 @@ Run JQL in a [GitHub action](https://docs.github.com/en/actions) to find a speci
 ## Authentication
 
 To provide a URL and credentials you can use the [`gajira-login`](https://github.com/atlassian/gajira-login) action, which will write a config file this action can read.
-Alternatively, you can simply set some environment variables:
+Alternatively, you can set some environment variables:
 
-- `JIRA_BASE_URL`
-- `JIRA_API_TOKEN`
-- `JIRA_USER_EMAIL`
+- `JIRA_BASE_URL` - e.g. `https://my-org.atlassian.net`. The URL for your Jira instance.
+- `JIRA_API_TOKEN` - e.g. `iaJGSyaXqn95kqYvq3rcEGu884TCbMkU`. An access token.
+- `JIRA_USER_EMAIL` - e.g. `user@example.com`. The email address for the access token.
 
 ## Inputs
 
-- `jql` - JQL query that returns exactly 1 issue
+- `jql` - JQL query that returns at most 1 issue
 
 ## Outputs
 
-- `issue` - The issue key found, e.g. TEST-23.
+The action will exit with a zero exit code unless it encounters any errors or finds more than 1 issue.
+
+- `issue` - The issue key found, e.g. TEST-23. Empty if none.
 
 ## Examples
 
