@@ -1,22 +1,13 @@
-package jira
+package main
 
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
-	"github.com/tomhjp/gh-action-jira-search/config"
-
 	"github.com/stretchr/testify/require"
+	"github.com/tomhjp/gh-action-jira/config"
 )
-
-func TestGenerateURL(t *testing.T) {
-	url := generateURL("https://org.atlassian.net/", "/rest/api/3/search", url.Values{
-		"jql": {"project = FOO"},
-	})
-	require.Equal(t, "https://org.atlassian.net/rest/api/3/search?jql=project+%3D+FOO", url)
-}
 
 func TestFindIssueKeys(t *testing.T) {
 	// generate a test server so we can capture and inspect the request
@@ -54,7 +45,7 @@ func TestFindIssueKeys(t *testing.T) {
 		APIToken:  "supersecretvalue",
 		UserEmail: "user@example.com",
 	}
-	keys, err := FindIssueKeys(config, `project = "VAULT""`)
+	keys, err := findIssueKeys(config, `project = "VAULT""`)
 	require.NoError(t, err)
 	require.Len(t, keys, 2)
 	require.Equal(t, []string{"FOO-23", "FOO-24"}, keys)

@@ -1,13 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 
-	"github.com/tomhjp/gh-action-jira-search/config"
-	"github.com/tomhjp/gh-action-jira-search/jira"
+	"github.com/tomhjp/gh-action-jira/config"
+	"github.com/tomhjp/gh-action-jira/jira"
 )
 
 func main() {
@@ -27,7 +29,7 @@ func search() error {
 		return err
 	}
 
-	issueKeys, err := jira.FindIssueKeys(config, jql)
+	issueKeys, err := findIssueKeys(config, jql)
 	if err != nil {
 		return err
 	}
@@ -46,4 +48,31 @@ func search() error {
 	fmt.Printf("::set-output name=key::%s\n", key)
 
 	return nil
+}
+
+type searchResponse struct {
+	Issues []struct {
+		Key string `json:"key"`
+	} `json:"issues"`
+}
+
+func findIssueKeys(config config.JiraConfig, jql string) ([]string, error) {
+	query := url.Values{
+		"jql":    {jql},
+		"fields": {"summary"}, // Specify fields summary purely to minimise the size of all the unused fields in the response.
+	}
+	respBody, err := jira.DoRequest(config, "GET", "/rest/api/3/search", query, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var response searchResponse
+	json.Unmarshal(respBody, &response)
+
+	result := []string{}
+	for _, issue := range response.Issues {
+		result = append(result, issue.Key)
+	}
+
+	return result, nil
 }
